@@ -24,7 +24,7 @@ class Game {
    */
 
   makeBoard() {
-    for (let y = 0; y < this.hight; y++) {
+    for (let y = 0; y < this.height; y++) {
       this.board.push(Array.from({ length: this.width }));
     }
   }
@@ -65,6 +65,7 @@ class Game {
 
   findSpotForCol(x) {
     for (let y = this.height - 1; y >= 0; y--) {
+
       if (!this.board[y][x]) {
         return y;
       }
@@ -77,7 +78,7 @@ class Game {
   placeInTable(y, x) {
     const piece = document.createElement("div");
     piece.classList.add("piece");
-    piece.classList.add(`p${currPlayer}`);
+    piece.classList.add(`p${this.currPlayer}`);
     piece.style.top = -50 * (y + 2);
 
     const spot = document.getElementById(`${y}-${x}`);
@@ -95,7 +96,7 @@ class Game {
   handleClick(evt) {
     // get x from ID of clicked cell
     const x = +evt.target.id;
-    console.log(x);
+    console.log(this.findSpotForCol(x));
     // get next spot in column (if none, ignore click)
     const y = this.findSpotForCol(x);
     console.log(y);
@@ -104,7 +105,7 @@ class Game {
     }
 
     // place piece in board and add to HTML table
-    board[y][x] = this.currPlayer;
+    this.board[y][x] = this.currPlayer;
     this.placeInTable(y, x);
 
     // check for win
@@ -128,17 +129,17 @@ class Game {
       // Check four cells to see if they're all color of current player
       //  - cells: list of four (y, x) cells
       //  - returns true if all are legal coordinates & all match currPlayer
-
+      console.log("this in _win", this)
       return cells.every(
         ([y, x]) =>
           y >= 0 &&
           y < this.height &&
           x >= 0 &&
           x < this.width &&
-          board[y][x] === this.currPlayer
+          this.board[y][x] === this.currPlayer
       );
     }
-
+    const _winBound = _win.bind(this)
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         // get "check list" of 4 cells (starting here) for each of the different
@@ -169,7 +170,10 @@ class Game {
         ];
 
         // find winner (only checking each win-possibility as needed)
-        if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+        // if (_win.call(this,horiz) || _win.call(this,vert) || _win.call(this,diagDR) || _win.call(this,diagDL)) {
+        //   return true;
+        // }
+        if (_winBound(horiz) || _winBound(vert) || _winBound(diagDR) || _winBound(diagDL)) {
           return true;
         }
       }
